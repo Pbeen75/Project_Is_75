@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Machine Learning Description</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- ลิงก์ไปยัง CSS ไฟล์ style.css -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <!-- Navbar ส่วนบน -->
+  <nav class="navbar">
+    <ul>
+      <li><a href="{{ url_for('home') }}">Machine Learning</a></li>
+      <li><a href="{{ url_for('neural_network') }}">Neural Network</a></li>
+      <li><a href="{{ url_for('predict_house_form') }}">Demo Machine Learning</a></li>
+      <li><a href="{{ url_for('predict_cloud_form') }}">Demo Neural Network</a></li>
+    </ul>
+  </nav>
+
+  <!-- เนื้อหาทั้งหมดใน container -->
+  <div class="container">
+    <h1>Machine Learning Description</h1>
+
+    <!-- ภาพรวมของเว็บ -->
+    <p>
+       <strong>Machine Learning & Neural Network </strong>
+      เว็บไซต์นี้สาธิตการพัฒนาโมเดล <em>Machine Learning</em> และ 
+      <em>Neural Network</em> ที่ใช้สำหรับทำนายราคาบ้านใน California 
+      และการทำนายรูปภาพก้อนเมฆ โดยใช้ <strong>Colab</strong> ในการเทรนโมเดลครับ
+    </p>
+
+    <!-- ส่วนอธิบายเกี่ยวกับ Data Preparation -->
+    <section class="data-prep">
+      <h2>1. การเตรียมข้อมูล (Data Preparation)</h2>
+      <p>
+        ก่อนการเทรนโมเดล เราได้รวบรวมข้อมูลจาก 
+        <a href="https://www.kaggle.com/datasets/camnugent/california-housing-prices" target="_blank">
+          Kaggle: California Housing Prices</a>.
+        จากนั้นทำความสะอาดข้อมูล เช่น จัดการ Missing Values, ตรวจสอบ Outliers, 
+        และแปลงฟีเจอร์ให้พร้อมสำหรับการทำนาย 
+      </p>
+      <p>
+        เมื่อข้อมูลพร้อม เราจึงแบ่งข้อมูลออกเป็น <strong>Train Set</strong> (ใช้ฝึกโมเดล) 
+        และ <strong>Test Set</strong> (ใช้ประเมินโมเดล) เพื่อให้แน่ใจว่าโมเดลสามารถทำนายได้ดีกับข้อมูลใหม่
+      </p>
+    </section>
+
+    <!-- ส่วนอธิบายอัลกอริทึม Machine Learning -->
+    <section class="ml-theory">
+      <h2>2. ทฤษฎีอัลกอริทึม Machine Learning ที่ใช้</h2>
+
+      <!-- Linear Regression -->
+      <article class="algo">
+        <h3>2.1 Linear Regression</h3>
+        <p>
+          <strong>Linear Regression</strong> เป็นอัลกอริทึมพื้นฐานสำหรับ 
+          Regression (การทำนายค่าตัวเลข) โดยมีสมมติฐานว่าความสัมพันธ์ระหว่าง Feature (X) กับ 
+          Target (Y) เป็นเส้นตรงในรูปสมการ <code>Y = aX + b</code>.
+        </p>
+        <p>
+          ขั้นตอนพัฒนา:
+          <ul>
+            <li>กำหนดค่าเริ่มต้นของน้ำหนัก (Weights) และ Bias</li>
+            <li>คำนวณค่าทำนายกับค่าจริง แล้วหาความผิดพลาด (Error)</li>
+            <li>ใช้วิธี <em>Gradient Descent</em> เพื่อลดความผิดพลาด</li>
+            <li>ปรับค่าพารามิเตอร์จนกว่าความผิดพลาดจะต่ำ</li>
+          </ul>
+        </p>
+      </article>
+
+      <!-- Gradient Boosting Regressor -->
+      <article class="algo">
+        <h3>2.2 Gradient Boosting Regressor</h3>
+        <p>
+          <strong>Gradient Boosting</strong> เป็นเทคนิค Ensemble Learning 
+          ที่นำ Decision Tree หลาย ๆ ต้นมาต่อกันเป็นขั้น ๆ (Sequential) 
+          โดยแต่ละต้นจะพยายามแก้ไขข้อผิดพลาดของต้นก่อนหน้า
+        </p>
+        <p>
+          ขั้นตอนพัฒนา:
+          <ul>
+            <li>เริ่มจากโมเดลพื้นฐาน (เช่น ต้นไม้ตื้น ๆ)</li>
+            <li>คำนวณ Residual (ข้อผิดพลาด) ของโมเดลปัจจุบัน</li>
+            <li>ฝึกต้นไม้ถัดไปให้คาดการณ์ Residual เหล่านั้น</li>
+            <li>นำผลมารวมกัน (Boost) เพื่อปรับปรุงการทำนาย</li>
+            <li>ทำซ้ำจนกว่าจะครบจำนวนต้นไม้ หรือไม่มีการปรับปรุง</li>
+          </ul>
+        </p>
+      </article>
+    </section>
+
+    <!-- ส่วนอธิบายขั้นตอนการพัฒนาโมเดล ML -->
+    <section class="ml-steps">
+      <h2>3. ขั้นตอนการพัฒนาโมเดลทั้ง 2 ประเภท (ML)</h2>
+      <ol>
+        <li><strong>Data Loading:</strong> โหลดข้อมูลจาก CSV 
+          (<a href="https://www.kaggle.com/datasets/camnugent/california-housing-prices" target="_blank">Kaggle</a>)
+        </li>
+        <li><strong>Data Cleaning:</strong> จัดการ Missing, Outliers และแปลงฟีเจอร์
+        </li>
+        <li><strong>Train/Test Split:</strong> แบ่งข้อมูล 80%/20% </li>
+        <li><strong>Train Model:</strong>
+          <ul>
+            <li>Linear Regression: คำนวณค่าพารามิเตอร์ (Weight, Bias)</li>
+            <li>Gradient Boosting Regressor: ฝึกต้นไม้ทีละต้นเพื่อแก้ Residual ของต้นก่อนหน้า</li>
+          </ul>
+        </li>
+        <li><strong>Model Evaluation:</strong> ประเมินด้วย Metrics เช่น MSE, RMSE, R² Score</li>
+        <li><strong>Save Model:</strong> บันทึกโมเดลเป็นไฟล์ <code>.pkl</code> เพื่อใช้งานต่อในvscode</li>
+      </ol>
+    </section>
+
+    <!-- เชิญไปหน้า Demo -->
+    <p>
+      สามารถกดปุ่ม
+      <strong>Demo Machine Learning</strong> เพื่อไปหน้าการทำนายได้เลยครับหรือจะกดปุ่ม <strong>Demo Predict House</strong>ได้เช่นกันครับ
+      <br/>
+      <a href="{{ url_for('predict_house_form') }}" class="btn">Demo Predict House</a>
+    </p>
+
+  </div><!-- end container -->
+
+</body>
+</html>

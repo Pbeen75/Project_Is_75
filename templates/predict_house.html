@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Predict California House</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- เรียกใช้ CSS (ถ้ามี) จาก style.css -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <ul>
+      <li><a href="{{ url_for('home') }}">Machine Learning</a></li>
+      <li><a href="{{ url_for('neural_network') }}">Neural Network</a></li>
+      <li><a href="{{ url_for('predict_house_form') }}">Demo Machine Learning</a></li>
+      <li><a href="{{ url_for('predict_cloud_form') }}">Demo Neural Network</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <h1>Predict California House</h1>
+    <p>
+      กรอกข้อมูล <strong>12 ฟีเจอร์</strong> เพื่อนำไป <strong>ทำนายราคาบ้าน</strong>
+      ด้วยโมเดล <strong><em>Linear Regression</em></strong> หรือ <strong><em>Gradient Boosting</em></strong>
+    </p>
+
+    <!-- ส่วนรูปภาพ 2 รูปและคำอธิบายใต้ภาพ -->
+    <div class="images-container">
+      <figure>
+        <img src="{{ url_for('static', filename='images/1.Linear Regression.jpg') }}" 
+             alt="Linear Regression Model"
+             width="800">
+        
+      </figure>
+
+      
+    </div>
+
+    <div class="two-forms-wrapper">
+        <div class="form-column">
+            <h2>Linear Regression</h2>
+        <!-- ฟอร์มสำหรับกรอกข้อมูลและทำนาย -->
+        <div class="form-center">
+        <!--<form id="houseForm" method="POST" action="/predict_house"> -->
+        <form id="formLR">
+            <!-- ตัวอย่าง 12 Inputs -->
+            <div class="form-group">
+            <label for="price">Price(0-500,000):</label>
+            <input type="number" step="any" id="price" name="price" required 
+                    min="0" max="500000" />
+            </div>
+
+            <div class="form-group">
+            <label for="quantity">Quantity(1-10):</label>
+            <input type="number" step="1" id="quantity" name="quantity" required 
+                    min="1" max="10" />
+            </div>
+
+            <div class="form-group">
+            <label for="customer_rate">Customer Rate(1-5):</label>
+            <input type="number" step="any" id="customer_rate" name="customer_rate" required min="1" max="5" />
+            </div>
+
+            <div class="form-group">
+            <label for="longitude">Longitude(-124.35 ถึง -114.31):</label>
+            <input type="number" step="any" id="longitude" name="longitude" required />
+            </div>
+
+            <div class="form-group">
+            <label for="latitude">Latitude(32.54 ถึง 41.95):</label>
+            <input type="number" step="any" id="latitude" name="latitude" required />
+            </div>
+
+            <div class="form-group">
+            <label for="housing_median_age">Housing Median Age(1–52):</label>
+            <input type="number" step="any" id="housing_median_age" name="housing_median_age" required />
+            </div>
+
+            <div class="form-group">
+            <label for="total_rooms">Total Rooms(2–39,320):</label>
+            <input type="number" step="any" id="total_rooms" name="total_rooms" required />
+            </div>
+
+            <div class="form-group">
+            <label for="total_bedrooms">Total Bedrooms(1–6,445):</label>
+            <input type="number" step="any" id="total_bedrooms" name="total_bedrooms" required />
+            </div>
+
+            <div class="form-group">
+            <label for="population">Population(3–35,682):</label>
+            <input type="number" step="any" id="population" name="population" required />
+            </div>
+
+            <div class="form-group">
+            <label for="households">Households(1–6,082):</label>
+            <input type="number" step="any" id="households" name="households" required />
+            </div>
+
+            <div class="form-group">
+            <label for="median_income">Median Income(0.5–15):</label>
+            <input type="number" step="any" id="median_income" name="median_income" required />
+            </div>
+
+            <div class="form-group">
+            <label for="ocean_proximity_INLAND">ocean_proximity_INLAND (0 or 1):</label>
+            <input type="number" step="1" min="0" max="1" id="ocean_proximity_INLAND" name="ocean_proximity_INLAND" required />
+            </div>
+
+                <!-- ปุ่ม Predict + span ตอบข้างปุ่ม -->
+            <button type="submit" id="predictBtn">Predict (LR)</button>
+            <span id="predictResult" style="margin-left: 1rem; color: blue; font-weight: bold;"></span>
+        </form>
+        </div>
+        
+        </div>
+        
+
+
+        <figure>
+            <img src="{{ url_for('static', filename='images/2.Gradient Boosting Regressor.jpg') }}" 
+                 alt="Gradient Boosting Regressor"
+                 width="800">
+            
+          </figure>
+
+        <!-- ฟอร์ม2: Gradient Boosting -->
+        <h2>Gradient Boosting</h2>
+        <div class="form-center">
+            <form id="formGB">
+                <!-- ตัวอย่าง 12 Inputs -->
+                <div class="form-group">
+                    <label for="price">Price(0-500,000):</label>
+                    <input type="number" step="any" id="price" name="price" required 
+                        min="0" max="500000" />
+                </div>
+        
+                <div class="form-group">
+                    <label for="quantity">Quantity(1-10):</label>
+                    <input type="number" step="1" id="quantity" name="quantity" required 
+                        min="1" max="10" />
+                </div>
+        
+                <div class="form-group">
+                    <label for="customer_rate">Customer Rate(1-5):</label>
+                    <input type="number" step="any" id="customer_rate" name="customer_rate" required 
+                        min="1" max="5" />
+                </div>
+        
+                
+        
+                <div class="form-group">
+                    <label for="longitude">Longitude(-124.35 ถึง -114.31):</label>
+                    <input type="number" step="any" id="longitude" name="longitude" required />
+                </div>
+        
+                <div class="form-group">
+                    <label for="latitude">Latitude(32.54 ถึง 41.95):</label>
+                    <input type="number" step="any" id="latitude" name="latitude" required />
+                </div>
+        
+                <div class="form-group">
+                    <label for="housing_median_age">Housing Median Age(1–52):</label>
+                    <input type="number" step="any" id="housing_median_age" name="housing_median_age" required />
+                </div>
+        
+                <div class="form-group">
+                    <label for="total_rooms">Total Rooms(2–39,320):</label>
+                    <input type="number" step="any" id="total_rooms" name="total_rooms" required />
+                </div>
+        
+                <div class="form-group">
+                    <label for="total_bedrooms">Total Bedrooms(1–6,445):</label>
+                    <input type="number" step="any" id="total_bedrooms" name="total_bedrooms" required />
+                </div>
+        
+                <div class="form-group">
+                    <label for="population">Population(3–35,682):</label>
+                    <input type="number" step="any" id="population" name="population" required />
+                </div>
+        
+                <div class="form-group">
+                    <label for="households">Households(1–6,082):</label>
+                    <input type="number" step="any" id="households" name="households" required />
+                </div>
+        
+                <div class="form-group">
+                    <label for="median_income">Median Income(0.5–15):</label>
+                    <input type="number" step="any" id="median_income" name="median_income" required />
+                </div>
+        
+                <div class="form-group">
+                    <label for="ocean_proximity_INLAND">ocean_proximity_INLAND (0 or 1):</label>
+                    <input type="number" step="1" min="0" max="1" id="ocean_proximity_INLAND" name="ocean_proximity_INLAND" required />
+                </div>
+    
+                <!-- ปุ่ม Predict + span ตอบข้างปุ่ม -->
+                <button type="submit">Predict (GB)</button>
+                <span id="gbResult" style="margin-left:1rem; color:green; font-weight:bold;"></span>
+            </form>
+    
+            <!-- end form-center -->
+    
+            <!-- ส่วนแสดงผลลัพธ์ -->
+            <div id="result" style="margin-top:1rem; color:green; font-weight:bold;"></div>
+        </div>
+        
+
+    </div> <!-- end container -->
+</div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Predict Cloud</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <!-- เรียกใช้ CSS (ถ้ามี) จาก style.css -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <ul>
+      <li><a href="{{ url_for('home') }}">Machine Learning</a></li>
+      <li><a href="{{ url_for('neural_network') }}">Neural Network</a></li>
+      <li><a href="{{ url_for('predict_house_form') }}">Demo Machine Learning</a></li>
+      <li><a href="{{ url_for('predict_cloud_form') }}">Demo Neural Network</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <h1>Cloud Detection</h1>
+    <p>อัปโหลดรูปภาพเพื่อทำนายว่าเป็น "<strong><em>Cloud</em></strong>" หรือ "<strong><em>Not Cloud</em></strong>"</p>
+
+    <figure>
+        <img src="{{ url_for('static', filename='images/3.cloud.jpg') }}" 
+             alt="Gradient Boosting Regressor"
+             width="800">
+        
+      </figure>
+
+    <!-- ฟอร์มสำหรับอัปโหลดรูป -->
+    <!-- สำคัญ: ต้องมี enctype="multipart/form-data" เพื่ออัปโหลดไฟล์ -->
+    <form id="cloudForm" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="cloudImage">Choose an image:</label>
+        <input type="file" id="cloudImage" name="image" accept="image/*" required>
+      </div>
+      <button type="submit">Predict Cloud</button>
+      <!-- แสดงผลลัพธ์การทำนาย -->
+      <span id="cloudResult" style="margin-left:1rem; color:blue; font-weight:bold;"></span>
+    </form>
+
+  </div><!-- end container -->
+
+  <script>
+    const cloudForm = document.getElementById('cloudForm');
+    const cloudResult = document.getElementById('cloudResult');
+
+    cloudForm.addEventListener('submit', async function(e){
+      e.preventDefault(); // ป้องกันไม่ให้ form reload หน้า
+
+      // สร้าง FormData จากฟอร์ม (สำหรับส่งไฟล์)
+      const formData = new FormData(cloudForm);
+
+      try {
+        // ส่ง POST /predict_cloud
+        const response = await fetch('/predict_cloud', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await response.json();
+
+        if(data.error) {
+          // กรณี error
+          cloudResult.style.color = 'red';
+          cloudResult.textContent = "Error: " + data.error;
+        } else {
+          // สำเร็จ => แสดงผล Cloud / Not Cloud และ confidence
+          cloudResult.style.color = 'blue';
+          const label = data.prediction; // "Cloud" หรือ "Not Cloud"
+          const conf = data.confidence ? Number(data.confidence).toFixed(2) : "?";
+          cloudResult.textContent = label;
+        }
+      } catch(err) {
+        console.error(err);
+        cloudResult.style.color = 'red';
+        cloudResult.textContent = "เกิดข้อผิดพลาดในการทำนาย";
+      }
+    });
+  </script>
+</body>
+</html>

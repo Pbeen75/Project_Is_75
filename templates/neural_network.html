@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Neural Network Description</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- เรียกใช้ CSS ของเรา (static/style.css) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <ul>
+      <li><a href="{{ url_for('home') }}">Machine Learning</a></li>
+      <li><a href="{{ url_for('neural_network') }}">Neural Network</a></li>
+      <li><a href="{{ url_for('predict_house_form') }}">Demo Machine Learning</a></li>
+      <li><a href="{{ url_for('predict_cloud_form') }}">Demo Neural Network</a></li>
+    </ul>
+  </nav>
+
+  <!-- Container สำหรับเนื้อหาหลัก -->
+  <div class="container">
+    <h1>Neural Network Description</h1>
+
+    <p>
+      ผมจะอธิบายกระบวนการ 
+      <strong>พัฒนาโมเดล Neural Network</strong> ตั้งแต่การเตรียมข้อมูล 
+      ไปจนถึงการเทรนและประเมินผล
+    </p>
+
+    <!-- การเตรียมข้อมูล (Data Preparation) -->
+    <section class="data-prep">
+      <h2>1. การเตรียมข้อมูล (Data Preparation)</h2>
+      <p>
+        ก่อนเทรนโมเดลผมได้ใช้ข้อมูลภาพก้อนเมฆจาก 
+        <a href="https://www.kaggle.com/datasets/kishor1123/cloud-satelite-maxar-dataset" target="_blank">
+          Kaggle: Cloud Satellite Maxar Dataset
+        </a> 
+        เพื่อนำมาจำแนกเป็น 
+        <em>Cloud</em> (รูปภาพที่มีก้อนเมฆ) และ 
+        <em>Not Cloud</em> (รูปภาพที่ไม่ใช่ก้อนเมฆ).
+      </p>
+      
+      <p>
+        หลังจากนั้นจะทำการแบ่งข้อมูลเป็น 
+        <strong>Train Set(80%)</strong> และ 
+        <strong>Validation Set(20%)</strong> ตามที่ผมได้เทรนไปครับ
+      </p>
+    </section>
+
+    <!-- ทฤษฎีอัลกอริทึม Neural Network -->
+    <section class="nn-theory">
+      <h2>2. ทฤษฎีของ Neural Network ที่พัฒนา</h2>
+      <article class="algo">
+        <h3>2.1 Convolutional Neural Network (CNN)</h3>
+        <p>
+          การแยกประเภทภาพ (Image Classification) 
+          ผมใช้ <strong>Convolutional Neural Network</strong> (CNN) 
+          ซึ่งประกอบด้วยเลเยอร์ <em>Convolution</em>, <em>Pooling</em>, 
+          และ <em>Fully Connected</em> เพื่อตรวจจับ Features ในภาพ เช่น ขอบ, รูปร่าง, 
+          และรายละเอียดต่าง ๆ. จากนั้นสรุปผล (Cloud / Not Cloud).
+        </p>
+        <p>
+          <strong>ขั้นตอนการทำงานของ CNN:</strong>
+          <ul>
+            <li><strong>Convolution Layer:</strong> ใช้ Kernel เลื่อนผ่านภาพ</li>
+            <li><strong>Pooling Layer:</strong> ลดขนาดภาพ</li>
+            <li><strong>Flatten:</strong> แปลงข้อมูลเป็น 1 มิติ</li>
+            <li><strong>Fully Connected Layer:</strong> ทำนายผลด้วย Neuron หลายตัว</li>
+          </ul>
+        </p>
+      </article>
+    </section>
+
+    <!-- ขั้นตอนการพัฒนาโมเดล Neural Network -->
+    <section class="nn-steps">
+      <h2>3. ขั้นตอนการพัฒนาโมเดล Neural Network</h2>
+      <ol>
+        <li><strong>Data Loading:</strong> โหลดภาพจาก Dataset (Cloud / Not Cloud)</li>
+        <li><strong>Preprocessing:</strong> Resize, Normalize, Augmentation</li>
+        <li><strong>Model Architecture:</strong> เลือกใช้ CNN เป็นหลัก</li>
+        <li><strong>Compile Model:</strong> กำหนด Loss (เช่น binary_crossentropy), Optimizer (เช่น Adam)</li>
+        <li><strong>Train Model:</strong> กำหนด Epoch, Batch Size, แล้วฝึกโมเดล</li>
+        <li><strong>Evaluate:</strong> ประเมิน Accuracy, Loss บน Validation Set</li>
+        <li><strong>Save Model:</strong> บันทึกเป็นไฟล์ <code>.keras</code> (หรือ <code>.h5</code>) แต่ผมใช้.kerasเพราะในColabบอกว่าตัวนี้ดีกว่า.h5ครับ</li>
+      </ol>
+    </section>
+
+    <!-- เชิญไปหน้า Demo Cloud -->
+    <p>
+      สามารถกดปุ่ม<strong> Demo Neural Network </strong> เพื่อไปหน้าการทำนายได้เลยครับหรือจะกดปุ่ม<strong> Demo Predict Cloud </strong>ได้เช่นกันครับ
+      <a href="{{ url_for('predict_cloud_form') }}" class="btn">Demo Predict Cloud</a> 
+    </p>
+    
+    
+  </div> <!-- end container -->
+</body>
+</html>
