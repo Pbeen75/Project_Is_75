@@ -1,9 +1,9 @@
-from flask import Flask, render_template, request, jsonify
-import pickle
-import numpy as np
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+from flask import Flask, render_template, request, jsonify
+import pickle
+import numpy as np
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
@@ -154,3 +154,4 @@ def predict_cloud():
 # --------------------------- MAIN ---------------------------
 if __name__ == "__main__":
     app.run(debug=True)
+
