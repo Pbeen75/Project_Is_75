@@ -1,26 +1,31 @@
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
-from flask import Flask, render_template, request, jsonify
 import pickle
 import numpy as np
+from flask import Flask, render_template, request, jsonify
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
+# ปิดการใช้งาน GPU เพื่อลดการใช้ทรัพยากร
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 
 app = Flask(__name__)
 
-# --------------------------- LOAD MODELS ---------------------------
-# Linear Regression
-with open("models/Linear_Regression.pkl", "rb") as f:
-    linear_model = pickle.load(f)
-
-# Gradient Boosting Regressor
-with open("models/Gradient_Boosting_Regressor.pkl", "rb") as f:
-    boosting_model = pickle.load(f)
-
-# Cloud Detection (Neural Network)
-cloud_model = load_model("models/cloud_model.keras")
+# --------------------------- LOAD MODELS ONCE ---------------------------
+print("[INFO] Loading models...")
+try:
+    with open("models/Linear_Regression.pkl", "rb") as f:
+        linear_model = pickle.load(f)
+    
+    with open("models/Gradient_Boosting_Regressor.pkl", "rb") as f:
+        boosting_model = pickle.load(f)
+    
+    cloud_model = load_model("models/cloud_model.keras")
+    
+    print("[INFO] Models loaded successfully!")
+except Exception as e:
+    print(f"[ERROR] Model loading failed: {e}")
+    linear_model, boosting_model, cloud_model = None, None, None
 
 # --------------------------- ROUTES FOR HTML ---------------------------
 @app.route("/")
@@ -33,7 +38,6 @@ def neural_network():
 
 @app.route("/predict_house_form")
 def predict_house_form():
-    # หน้าเว็บ มี 2 ฟอร์ม แยก LR กับ GB
     return render_template("predict_house.html")
 
 @app.route("/predict_cloud_form")
@@ -43,95 +47,47 @@ def predict_cloud_form():
 # --------------------------- ENDPOINT: LINEAR REGRESSION ---------------------------
 @app.route("/predict_house_lr", methods=["POST"])
 def predict_house_lr():
-    """
-    รับ 12 ฟีเจอร์ -> ทำนายด้วย Linear Regression
-    ถ้าติดลบ => 0
-    """
+    if linear_model is None:
+        return jsonify({"error": "Model not loaded"})
+    
     try:
-        # ดึง 12 ฟีเจอร์
-        features = [
-            float(request.form["price"]),
-            float(request.form["quantity"]),
-            float(request.form["customer_rate"]),
-            float(request.form["longitude"]),
-            float(request.form["latitude"]),
-            float(request.form["housing_median_age"]),
-            float(request.form["total_rooms"]),
-            float(request.form["total_bedrooms"]),
-            float(request.form["population"]),
-            float(request.form["households"]),
-            float(request.form["median_income"]),
-            float(request.form["ocean_proximity_INLAND"])
-        ]
+        features = [float(request.form[key]) for key in request.form]
         X = np.array(features).reshape(1, -1)
-
-        # Predict
-        pred_lr = linear_model.predict(X)[0]
-        # Clamp negative => 0
-        if pred_lr < 0:
-            pred_lr = 0
-
-        return jsonify({
-            "lr_prediction": float(pred_lr)
-        })
-
+        pred_lr = max(0, linear_model.predict(X)[0])
+        return jsonify({"lr_prediction": float(pred_lr)})
     except Exception as e:
         return jsonify({"error": str(e)})
 
 # --------------------------- ENDPOINT: GRADIENT BOOSTING ---------------------------
 @app.route("/predict_house_gb", methods=["POST"])
 def predict_house_gb():
-    """
-    รับ 12 ฟีเจอร์ -> ทำนายด้วย Gradient Boosting
-    ถ้าติดลบ => 0
-    """
+    if boosting_model is None:
+        return jsonify({"error": "Model not loaded"})
+    
     try:
-        features = [
-            float(request.form["price"]),
-            float(request.form["quantity"]),
-            float(request.form["customer_rate"]),
-            float(request.form["longitude"]),
-            float(request.form["latitude"]),
-            float(request.form["housing_median_age"]),
-            float(request.form["total_rooms"]),
-            float(request.form["total_bedrooms"]),
-            float(request.form["population"]),
-            float(request.form["households"]),
-            float(request.form["median_income"]),
-            float(request.form["ocean_proximity_INLAND"])
-        ]
+        features = [float(request.form[key]) for key in request.form]
         X = np.array(features).reshape(1, -1)
-
-        # Predict
-        pred_gb = boosting_model.predict(X)[0]
-        # Clamp negative => 0
-        if pred_gb < 0:
-            pred_gb = 0
-
-        return jsonify({
-            "gb_prediction": float(pred_gb)
-        })
-
+        pred_gb = max(0, boosting_model.predict(X)[0])
+        return jsonify({"gb_prediction": float(pred_gb)})
     except Exception as e:
         return jsonify({"error": str(e)})
 
-# --------------------------- ENDPOINT: CLOUD ---------------------------
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+# --------------------------- ENDPOINT: CLOUD DETECTION ---------------------------
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route("/predict_cloud", methods=["POST"])
 def predict_cloud():
+    if cloud_model is None:
+        return jsonify({"error": "Model not loaded"})
+    
     try:
-        if "image" not in request.files:
-            return jsonify({"error": "ไม่มีไฟล์ภาพที่อัปโหลด"})
-
-        file = request.files["image"]
+        file = request.files.get("image")
+        if not file or not allowed_file(file.filename):
+            return jsonify({"error": "Invalid file. Please upload a .jpg or .png image."})
         
-        if not allowed_file(file.filename):
-            return jsonify({"error": "ไฟล์ที่อัปโหลดต้องเป็น .jpg หรือ .png เท่านั้น"})
-
         file_path = os.path.join("static/uploads", file.filename)
         file.save(file_path)
 
@@ -142,16 +98,10 @@ def predict_cloud():
         prediction = cloud_model.predict(img_array)[0][0]
         label = "Cloud" if prediction <= 0.5 else "Not Cloud"
         
-        return jsonify({
-            "prediction": label,
-            "image_url": file_path
-        })
-
+        return jsonify({"prediction": label, "image_url": file_path})
     except Exception as e:
         return jsonify({"error": str(e)})
 
-
 # --------------------------- MAIN ---------------------------
 if __name__ == "__main__":
-    app.run(debug=True)
-
+    app.run(debug=True, host="0.0.0.0", port=10000)
